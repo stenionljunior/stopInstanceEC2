@@ -1,0 +1,37 @@
+#LAMBDA START INSTANCES
+
+import boto3
+
+#define ec2
+ec2 = boto3.resource('ec2')
+
+def lambda_handler(event, context):
+    # Busca por instancias rodando e com a TAG LigarXHrs
+    filters = [{
+        'Name': 'tag:LigarXHrs',
+        'Values': ['LigarXHrs']
+        },
+        {
+            'Name': 'instance-state-name', 
+            'Values': ['stopped']
+        }
+    ]
+    
+    # Busca as instâncias
+    instances = ec2.instances.filter(Filters=filters)   
+    
+    # Obtem o ID da Instancia
+    StoppedInstances = [instance.id for instance in instances]
+    
+    # Log para testar quais instâncias foram impactadas
+    print(StoppedInstances)
+
+    # Verificar se existem instâncias de TAG: DesligarXHrs executando
+    if len(StoppedInstances) > 0:
+        #perform the shutdown
+        start = ec2.instances.filter(InstanceIds=StoppedInstances).start()
+        print("Startando as instâncias")
+    else:
+        print("Não foram encontradas instâncias em STOPPED")
+
+    return 'Sucesso!'
