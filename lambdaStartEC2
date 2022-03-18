@@ -28,7 +28,7 @@ def lambda_handler(event, context):
 
     # Verificar se existem instâncias de TAG: DesligarXHrs executando
     if len(StoppedInstances) > 0:
-        #perform the shutdown
+        #perform the start
         start = ec2.instances.filter(InstanceIds=StoppedInstances).start()
         print("Startando as instâncias")
     else:
